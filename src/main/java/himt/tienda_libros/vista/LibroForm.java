@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -38,6 +40,7 @@ public class LibroForm extends JFrame {
                 cargarLibroSeleccionado();
             }
         });
+        modificarButton.addActionListener(e -> modificarLibro());
     }
 
     private void iniciarForma(){
@@ -75,6 +78,32 @@ public class LibroForm extends JFrame {
         listarLibros();
     }
 
+    private void modificarLibro(){
+        // Leer los valores del formulario
+        if (this.idTexto.getText().equals("")){
+            mostrarMensaje("Debe seleccionar un registro");
+            return;
+        }else{
+            // Verificamos que el nombre del libro no sea nulo
+            if(libroTexto.getText().equals("")){
+                mostrarMensaje("Ingresa el nombre del libro");
+                libroTexto.requestFocusInWindow();
+                return;
+            }
+        }
+        // Llenamos el objeto libro a actualizar
+        var idLibro = Integer.parseInt(idTexto.getText());
+        var nombreLibro = libroTexto.getText();
+        var autor = autortexto.getText();
+        var precio = Double.parseDouble(precioTexto.getText());
+        var existencias = Integer.parseInt(existenciasTexto.getText());
+        var libro = new Libro(idLibro,nombreLibro,autor,precio,existencias);
+        this.libroServicio.guardarLibro(libro);
+        mostrarMensaje("Se modificó el libro...");
+        limpiarFormulario();
+        listarLibros();
+    }
+
     private void cargarLibroSeleccionado(){
         // Los indices de las columnas inician en 0
         var renglon = tablaLibros.getSelectedRow();
@@ -93,6 +122,7 @@ public class LibroForm extends JFrame {
     }
 
     private void limpiarFormulario(){
+        idTexto.setText("");
         libroTexto.setText("");
         autortexto.setText("");
         precioTexto.setText("");
